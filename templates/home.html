@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Vault App - Secure Cloud Backup</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- ============== EMBEDDED CSS (Fusion: Modern Dark + Google Clean) ============== -->
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #e2e8f0;
+            --text-light: #94a3b8;
+            --success: #10b981;
+            --border: #334155;
+            --shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.3);
+            --radius: 16px;
+            --google-blue: #1a73e8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Google Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        /* Google-style Logo with Vault Icon */
+        .logo {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 24px;
+            background: var(--google-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 38px;
+            color: white;
+            box-shadow: var(--shadow);
+            animation: float 3s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo svg {
+            width: 48px;
+            height: 48px;
+            stroke: white;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: white;
+        }
+
+        p.subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 36px;
+            line-height: 1.7;
+            font-weight: 500;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 50px;
+        }
+
+        .btn {
+            padding: 13px 28px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-login {
+            background: var(--google-blue);
+            color: white;
+        }
+
+        .btn-register {
+            background: transparent;
+            color: var(--text);
+            border: 2px solid var(--google-blue);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(26, 115, 232, 0.3);
+        }
+
+        .btn-login:hover {
+            background: #1557b0;
+        }
+
+        .btn-register:hover {
+            background: rgba(26, 115, 232, 0.1);
+            border-color: #4a8eff;
+        }
+
+        /* Features Section - Clean Cards */
+        .features {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+        }
+
+        .feature-card {
+            background: var(--card);
+            padding: 22px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--google-blue);
+            box-shadow: 0 12px 25px -5px rgba(26, 115, 232, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--google-blue);
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: white;
+        }
+
+        .feature-desc {
+            font-size: 0.92rem;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        footer {
+            margin-top: 70px;
+            font-size: 0.88rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        footer a {
+            color: var(--google-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            h1 { font-size: 2.1rem; }
+            .btn-group { flex-direction: column; align-items: center; }
+            .btn { width: 100%; max-width: 280px; }
+            .feature-card { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Google-Inspired Logo with Vault SVG -->
+        <div class="logo">
+            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+
+        <!-- Clean Title & Subtitle -->
+        <h1>Vault App</h1>
+        <p class="subtitle">
+            Securely backup & restore your files with end-to-end encryption.
+        </p>
+
+        <!-- Clean Google-style Buttons -->
+        <div class="btn-group">
+            <a href="/login" class="btn btn-login">Login</a>
+            <a href="/register" class="btn btn-register">Register</a>
+        </div>
+
+        <!-- Clean Feature Cards -->
+        <div class="features">
+            <div class="feature-card">
+                <span class="feature-icon">Lock</span>
+                <div class="feature-title">End-to-End Encryption</div>
+                <div class="feature-desc">Your files are encrypted on your device before upload.</div>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">Cloud</span>
+                <div class="feature-title">pCloud Backup</div>
+                <div class="feature-desc">Automatic sync with 10GB+ secure storage.</div>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">Mail</span>
+                <div class="feature-title">Gmail OTP Login</div>
+                <div class="feature-desc">2-Factor authentication via secure email code.</div>
+            </div>
+        </div>
+
+        <!-- Clean Footer -->
+        <footer>
+            &copy; 2025 Vault App | Made with <span style="color:#ef4444;">Heart</span> in Pakistan<br>
+            <a href="#">Privacy</a> • <a href="#">Terms</a> • <a href="#">Support</a>
+        </footer>
+    </div>
+
+    <!-- ============== EMBEDDED JS (Subtle Animations) ============== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const logo = document.querySelector('.logo');
+            setTimeout(() => {
+                logo.style.transform = 'scale(1.08)';
+                setTimeout(() => {
+                    logo.style.transform = 'scale(1)';
+                }, 300);
+            }, 600);
+        });
+    </script>
+</body>
+</html>

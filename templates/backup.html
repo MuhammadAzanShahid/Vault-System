@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Backup to pCloud - Vault App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gblue: #1a73e8; --gblue-dark: #1557b0; --ggreen: #34a853; --gred: #ea4335; --gorange: #fbbc04;
+            --bg: #f8f9fa; --surface: #ffffff; --surface-hover: #f1f3f4; --text-primary: #202124; --text-secondary: #5f6368;
+            --border: #dadce0; --shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+            --radius: 12px; --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Google Sans', sans-serif; }
+        body { background: var(--bg); color: var(--text-primary); min-height: 100vh; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+        .header h1 { font-size: 28px; font-weight: 500; }
+        .back-btn { color: var(--gblue); text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+
+        .card { background: var(--surface); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .card-title { font-size: 20px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+        .card-title svg { width: 28px; height: 28px; }
+
+        .vault-path { background: #f1f3f4; padding: 14px 16px; border-radius: 8px; font-family: 'Roboto Mono', monospace; color: var(--gblue); border: 1px solid var(--border); margin: 16px 0; }
+
+        .form-group { margin-bottom: 24px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-primary); }
+        .form-group input { width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; transition: var(--transition); }
+        .form-group input:focus { outline: none; border-color: var(--gblue); box-shadow: 0 0 0 3px rgba(26,115,232,0.2); }
+
+        .btn-primary { background: var(--gblue); color: white; border: none; padding: 14px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: var(--transition); }
+        .btn-primary:hover { background: var(--gblue-dark); transform: translateY(-1px); }
+
+        .progress-container { margin-top: 20px; display: none; }
+        .progress-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
+        .progress-fill { height: 100%; background: var(--gblue); width: 0%; border-radius: 4px; transition: width 0.4s ease; }
+        .progress-text { font-size: 14px; color: var(--text-secondary); text-align: center; font-weight: 500; }
+
+        .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 16px; margin-top: 24px; }
+        .file-item { text-align: center; cursor: pointer; transition: var(--transition); }
+        .file-item:hover { transform: translateY(-4px); }
+        .file-thumb { width: 100%; height: 90px; background: #e8f0fe; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; font-size: 32px; color: var(--gblue); border: 1px solid var(--border); }
+        .file-name { font-size: 13px; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .stats { display: flex; justify-content: space-between; margin-top: 24px; font-size: 14px; color: var(--text-secondary); }
+        .stats div { background: #f1f3f4; padding: 12px; border-radius: 8px; flex: 1; margin: 0 8px; text-align: center; }
+        .stats strong { display: block; font-size: 18px; color: var(--gblue); margin-bottom: 4px; }
+
+        @media (max-width: 768px) { .file-grid { grid-template-columns: repeat(3, 1fr); } .stats { flex-direction: column; } .stats div { margin: 8px 0; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/dashboard" class="back-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
+                Back to Dashboard
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                Backup Vault to pCloud
+            </div>
+            <p style="color: var(--text-secondary); margin-bottom: 16px;">
+                Your files will be compressed, encrypted with AES-256, and securely uploaded.
+            </p>
+
+            <div class="vault-path">D:\projectss\vault 3.0</div>
+
+            <form method="post" id="backupForm">
+                <div class="form-group">
+                    <label>Encryption Key</label>
+                    <input type="password" name="key" placeholder="Enter your secret key" required>
+                </div>
+                <input type="hidden" name="action" value="sync">
+                <button type="submit" class="btn-primary" id="backupBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    Start Backup
+                </button>
+
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                    <div class="progress-text" id="progressText">Initializing...</div>
+                </div>
+            </form>
+
+            <div class="stats">
+                <div><strong>12</strong> Files</div>
+                <div><strong>2.4 GB</strong> Total Size</div>
+                <div><strong>3 min</strong> Est. Time</div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 32px;">
+            <h3 style="font-size: 18px; margin-bottom: 16px;">Files in Vault</h3>
+            <div class="file-grid">
+                <div class="file-item">
+                    <div class="file-thumb">IMG</div>
+                    <div class="file-name">vacation.jpg</div>
+                </div>
+                <div class="file-item">
+                    <div class="file-thumb">FOLDER</div>
+                    <div class="file-name">Documents</div>
+                </div>
+                <div class="file-item">
+                    <div class="file-thumb">PDF</div>
+                    <div class="file-name">report.pdf</div>
+                </div>
+                <div class="file-item">
+                    <div class="file-thumb">ZIP</div>
+                    <div class="file-name">backup.zip</div>
+                </div>
+                <div class="file-item">
+                    <div class="file-thumb">IMG</div>
+                    <div class="file-name">photo.png</div>
+                </div>
+                <div class="file-item">
+                    <div class="file-thumb">XLS</div>
+                    <div class="file-name">budget.xlsx</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('backupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('backupBtn');
+            const progress = document.getElementById('progressContainer');
+            const fill = document.getElementById('progressFill');
+            const text = document.getElementById('progressText');
+
+            btn.disabled = true;
+            btn.innerHTML = 'Working...';
+            progress.style.display = 'block';
+
+            const steps = ['Scanning files...', 'Compressing...', 'Encrypting (AES-256)...', 'Uploading to pCloud...', 'Verifying integrity...'];
+            let i = 0, width = 0;
+            const interval = setInterval(() => {
+                if (i < steps.length) { text.textContent = steps[i]; i++; }
+                if (width < 95) { width += Math.random() * 18; fill.style.width = Math.min(width, 95) + '%'; }
+                else { clearInterval(interval); setTimeout(() => { fill.style.width = '100%'; text.textContent = 'Backup Complete!'; }, 600); }
+            }, 800);
+        });
+    </script>
+</body>
+</html>

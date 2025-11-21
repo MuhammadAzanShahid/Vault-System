@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>My Vault - Files</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #e2e8f0;
+            --text-light: #94a3b8;
+            --border: #334155;
+            --hover: rgba(26, 115, 232, 0.1);
+            --selected: rgba(26, 115, 232, 0.2);
+            --purple: #8b5cf6;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Google Sans', sans-serif; }
+        body { background: #0f172a; color: var(--text); min-height: 100vh; }
+
+        /* Header */
+        .header {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 600; color: var(--primary); text-decoration: none; }
+        .logo i { font-size: 28px; }
+        .user-menu { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 36px; height: 36px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+
+        /* Main Layout */
+        .main { display: flex; height: calc(100vh - 60px); }
+        .sidebar { width: 240px; background: var(--card); border-right: 1px solid var(--border); padding: 20px 0; }
+        .nav-item {
+            padding: 12px 24px;
+            color: var(--text-light);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: 0.2s;
+        }
+        .nav-item:hover, .nav-item.active { background: var(--hover); color: var(--text); }
+        .nav-item.active { background: var(--selected); color: var(--primary); font-weight: 500; }
+
+        /* Content Area */
+        .content-area { flex: 1; padding: 24px; overflow-y: auto; }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .search-box {
+            background: #334155;
+            border-radius: 8px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 400px;
+            border: 1px solid transparent;
+        }
+        .search-box:focus-within { border-color: var(--primary); }
+        .search-box input { background: none; border: none; outline: none; color: white; width: 100%; font-size: 15px; }
+
+        /* API Key Card */
+        .api-key-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .api-key-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .api-key-header i {
+            font-size: 28px;
+            color: var(--purple);
+        }
+        .api-key-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .api-key-display {
+            background: #0f172a;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            word-break: break-all;
+            border: 1px solid #334155;
+            color: #c4b5fd;
+            margin: 12px 0;
+        }
+        .copy-btn {
+            padding: 10px 24px;
+            background: var(--purple);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .copy-btn:hover { background: #7c3aed; }
+
+        /* Stats & Files Table */
+        .stats { margin-bottom: 20px; color: var(--text-light); font-size: 15px; }
+        .files-header {
+            display: grid;
+            grid-template-columns: 4fr 1fr 1fr 1fr 100px;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px 8px 0 0;
+            font-weight: 500;
+            font-size: 13px;
+            color: var(--text-light);
+            border-bottom: 1px solid var(--border);
+        }
+        .file-row {
+            display: grid;
+            grid-template-columns: 4fr 1fr 1fr 1fr 100px;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            transition: 0.2s;
+            align-items: center;
+        }
+        .file-row:hover {
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+        }
+        .file-name {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+        }
+        .file-name i { color: #8b5cf6; font-size: 20px; }
+        .actions button {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 4px;
+        }
+        .actions button:hover { background: var(--hover); color: white; }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-light);
+        }
+        .empty-state i { font-size: 64px; color: #334155; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <a href="/" class="logo">
+            <i class="fas fa-shield-alt"></i>
+            <span>My Vault</span>
+        </a>
+        <div class="user-menu">
+            <span>{{ session.get('username', 'User') }}</span>
+            <div class="avatar">{{ session.get('username', 'U')[0].upper() }}</div>
+            <a href="/logout" style="color: var(--text-light); margin-left: 20px; text-decoration: none;">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        </div>
+    </header>
+
+    <div class="main">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <a href="/dashboard" class="nav-item active">
+                <i class="fas fa-lock"></i>
+                <span>My Encrypted Files</span>
+            </a>
+            <a href="/download_vault_client" class="nav-item">
+                <i class="fas fa-download"></i>
+                <span>Get Desktop App</span>
+            </a>
+        </nav>
+
+        <!-- Content -->
+        <div class="content-area">
+            <div class="top-bar">
+                <h1 style="font-size: 28px;">My Encrypted Vault</h1>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search backups..." onkeyup="searchFiles(this.value)">
+                </div>
+            </div>
+
+            <!-- API KEY CARD (TOP ME DIKHEGA) -->
+            <div class="api-key-card">
+                <div class="api-key-header">
+                    <i class="fas fa-key"></i>
+                    <h3>Your Desktop App API Key</h3>
+                </div>
+
+                {% if api_key %}
+                    <div class="api-key-display">
+                        {{ api_key }}
+                    </div>
+                    <button class="copy-btn" onclick="navigator.clipboard.writeText('{{ api_key }}'); this.innerText='Copied!'; setTimeout(() => this.innerText='Copy Key', 2000);">
+                        Copy Key
+                    </button>
+                    <p style="font-size: 13px; color: #94a3b8; margin-top: 12px;">
+                        Yeh key sirf ek baar dikhegi!<br>
+                        Desktop app me daal do — phir auto sync hoga.
+                    </p>
+                {% else %}
+                    <p style="color: #ea4335; font-weight: 500;">
+                        API Key generate nahi hui. Page refresh karo.
+                    </p>
+                {% endif %}
+            </div>
+
+            <!-- Stats -->
+            <div class="stats">
+                <strong>{{ backups|length }}</strong> encrypted backups •
+                <strong>{{ total_size }} MB</strong> total storage used
+            </div>
+
+            <!-- Files List -->
+            <div style="background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border);">
+                <div class="files-header">
+                    <div>Name</div>
+                    <div>Size</div>
+                    <div>Date Added</div>
+                    <div>Type</div>
+                    <div>Actions</div>
+                </div>
+
+                {% if backups %}
+                    {% for b in backups %}
+                    <div class="file-row">
+                        <div class="file-name">
+                            <i class="fas fa-file-archive"></i>
+                            <span>{{ b.name }}</span>
+                        </div>
+                        <div>{{ b.size }} MB</div>
+                        <div>{{ b.time }}</div>
+                        <div>Encrypted Backup</div>
+                        <div class="actions">
+                            <a href="/download_backup/{{ b.name }}" title="Download">
+                                <i class="fas fa-download"></i>
+                            </a>
+                            <form method="post" style="display:inline;" onsubmit="return confirm('Permanently delete {{ b.name }}?')">
+                                <input type="hidden" name="delete_backup" value="{{ b.name }}">
+                                <button type="submit" title="Delete" style="color:#ea4335;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h3>No encrypted backups yet</h3>
+                        <p>Use the Desktop App to create your first secure backup</p>
+                        <a href="/download_vault_client" style="margin-top: 20px; padding: 14px 36px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">
+                            Download Desktop App
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function searchFiles(query) {
+            const rows = document.querySelectorAll('.file-row');
+            rows.forEach(row => {
+                const name = row.querySelector('.file-name span').textContent.toLowerCase();
+                row.style.display = name.includes(query.toLowerCase()) ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Select Files/Folders - Vault App</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #1557b0;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #e2e8f0;
+            --text-light: #94a3b8;
+            --border: #334155;
+            --shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.3);
+            --radius: 16px;
+            --hover: rgba(26, 115, 232, 0.1);
+            --selected: rgba(26, 115, 232, 0.2);
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Google Sans', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .picker {
+            background: var(--card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 560px;
+            overflow: hidden;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .header {
+            padding: 18px 24px;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo svg {
+            width: 20px;
+            height: 20px;
+            stroke: white;
+        }
+
+        .content {
+            padding: 20px 24px;
+            max-height: 65vh;
+            overflow-y: auto;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 12px 16px;
+            background: #334155;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+        }
+
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb {
+            cursor: pointer;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .breadcrumb:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb:last-child {
+            color: var(--text-light);
+            pointer-events: none;
+        }
+
+        .file-list {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .item {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .item:hover {
+            background: var(--hover);
+        }
+
+        .item.selected {
+            background: var(--selected);
+            border-left: 4px solid var(--primary);
+        }
+
+        .item:last-child {
+            border-bottom: none;
+        }
+
+        .item input[type="checkbox"] {
+            accent-color: var(--primary);
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            stroke: var(--primary);
+        }
+
+        .item-name {
+            flex: 1;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-size {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .selection-info {
+            margin-top: 16px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        .footer {
+            padding: 20px 24px;
+            background: #0f172a;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 11px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-light);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(26, 115, 232, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 480px) {
+            .picker { margin: 10px; }
+            .header { padding: 16px; font-size: 1rem; }
+            .content { padding: 16px; }
+            .footer { flex-direction: column; }
+            .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="picker">
+        <div class="header">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            Select Files/Folders for Backup
+        </div>
+
+        <div class="content">
+            <input type="text" class="search-bar" placeholder="Search files or folders..." id="searchInput">
+
+            <div class="breadcrumbs" id="breadcrumbs">
+                <span>Loading...</span>
+            </div>
+
+            <div class="file-list" id="fileList">
+                <div style="padding:32px; text-align:center; color:var(--text-light);">Loading files...</div>
+            </div>
+
+            <div class="selection-info" id="selectionInfo">
+                No items selected
+            </div>
+        </div>
+
+        <div class="footer">
+            <button class="btn btn-secondary" onclick="window.close()">Cancel</button>
+            <button class="btn btn-primary" id="backupBtn" onclick="saveSelection()" disabled>
+                Backup Now
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let selected = [];
+        let currentPath = '';
+        let allFiles = []; // Cache for search
+
+        const fileList = document.getElementById('fileList');
+        const breadcrumbs = document.getElementById('breadcrumbs');
+        const searchInput = document.getElementById('searchInput');
+        const selectionInfo = document.getElementById('selectionInfo');
+        const backupBtn = document.getElementById('backupBtn');
+
+        // Format file size
+        function formatSize(bytes) {
+            if (bytes === 0) return '—';
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(1024));
+            return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
+        }
+
+        // Build breadcrumbs
+        function updateBreadcrumbs(path) {
+            const parts = path.split('\\').filter(p => p);
+            breadcrumbs.innerHTML = '';
+            let fullPath = 'C:';
+
+            // Home button
+            const home = document.createElement('span');
+            home.className = 'breadcrumb';
+            home.textContent = 'Desktop';
+            home.onclick = () => {
+                const username = localStorage.getItem('vault_username') || 'User';
+                loadFiles(`C:\\Users\\${username}\\Desktop`);
+            };
+            breadcrumbs.appendChild(home);
+
+            if (parts.length === 0) return;
+
+            parts.forEach((part, i) => {
+                fullPath += '\\' + part;
+                const span = document.createElement('span');
+                span.textContent = ' > ';
+                span.style.color = 'var(--text-light)';
+                breadcrumbs.appendChild(span);
+
+                const crumb = document.createElement('span');
+                if (i === parts.length - 1) {
+                    crumb.textContent = part;
+                    crumb.style.color = 'var(--text-light)';
+                } else {
+                    crumb.className = 'breadcrumb';
+                    crumb.textContent = part;
+                    crumb.onclick = () => loadFiles(fullPath);
+                }
+                breadcrumbs.appendChild(crumb);
+            });
+        }
+
+        // Load files from API
+        function loadFiles(path) {
+            currentPath = path;
+            updateBreadcrumbs(path);
+            searchInput.value = '';
+            fileList.innerHTML = '<div style="padding:32px; text-align:center; color:var(--text-light);">Loading...</div>';
+
+            fetch(`/api/files?path=${encodeURIComponent(path)}`)
+                .then(r => r.json())
+                .then(files => {
+                    allFiles = files;
+                    renderFiles(files);
+                })
+                .catch(err => {
+                    console.error('API Error:', err);
+                    fileList.innerHTML = `<div style="padding:32px; text-align:center; color:var(--danger);">Failed to load files. Check path or permissions.</div>`;
+                });
+        }
+
+        // Render files
+        function renderFiles(files) {
+            fileList.innerHTML = '';
+            if (files.length === 0) {
+                fileList.innerHTML = `<div style="padding:32px; text-align:center; color:var(--text-light);">This folder is empty</div>`;
+                return;
+            }
+
+            files.forEach(f => {
+                const div = document.createElement('div');
+                div.className = 'item';
+                if (selected.includes(f.path)) div.classList.add('selected');
+
+                const icon = f.is_dir
+                    ? `<svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>`
+                    : `<svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg>`;
+
+                div.innerHTML = `
+                    <input type="checkbox" ${selected.includes(f.path) ? 'checked' : ''} onchange="toggleSelected('${f.path.replace(/'/g, "\\'")}', this.checked)">
+                    ${icon}
+                    <span class="item-name" title="${f.name}">${f.name}</span>
+                    <span class="item-size">${f.is_dir ? '' : formatSize(f.size)}</span>
+                `;
+
+                div.onclick = (e) => {
+                    if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'svg' && !e.target.closest('svg')) {
+                        if (f.is_dir) loadFiles(f.path);
+                    }
+                };
+
+                fileList.appendChild(div);
+            });
+        }
+
+        // Toggle selection
+        function toggleSelected(path, checked) {
+            if (checked) {
+                if (!selected.includes(path)) selected.push(path);
+            } else {
+                selected = selected.filter(p => p !== path);
+            }
+            updateSelectionUI();
+            highlightSelected();
+        }
+
+        function highlightSelected() {
+            document.querySelectorAll('.item').forEach(item => {
+                const checkbox = item.querySelector('input[type="checkbox"]');
+                const path = checkbox?.closest('.item')?.querySelector('.item-name')?.title || '';
+                if (selected.includes(path)) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
+
+        // Update selection info
+        function updateSelectionUI() {
+            const count = selected.length;
+            selectionInfo.textContent = count === 0
+                ? 'No items selected'
+                : `${count} item${count > 1 ? 's' : ''} selected`;
+            backupBtn.disabled = count === 0;
+        }
+
+        // Search
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase().trim();
+            if (query === '') {
+                renderFiles(allFiles);
+                return;
+            }
+
+            const filtered = allFiles.filter(f =>
+                f.name.toLowerCase().includes(query)
+            );
+            renderFiles(filtered);
+        });
+
+        // Save selection
+        function saveSelection() {
+            if (selected.length === 0) return;
+
+            window.opener.postMessage({
+                type: 'files_selected',
+                files: selected,
+                count: selected.length
+            }, '*');
+
+            window.close();
+        }
+
+        // Start from Desktop
+        document.addEventListener('DOMContentLoaded', () => {
+            const username = localStorage.getItem('vault_username') || 'User';
+            loadFiles(`C:\\Users\\${username}\\Desktop`);
+        });
+
+        // Initial UI
+        updateSelectionUI();
+    </script>
+</body>
+</html>
